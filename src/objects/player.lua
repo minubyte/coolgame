@@ -99,7 +99,7 @@ function Player:update(dt)
             end
             local r = dash_speed*self.dash.time
             local dx, dy = self.dash.x*r, self.dash.y*r
-            self.sc:add(LineParticle, self.x+self.w/2, self.y+self.h/2, dx, dy, 40)
+            self.sc:add(LineParticle, self.x+self.w/2, self.y+self.h/2, dx, dy, 40, PALETTE.acc)
             for _=0, 3 do
                 self.sc:add(Particle, self.x+self.w/2, self.y+self.h/2, self.dash.x*math.random(1, 4), self.dash.y*math.random(1, 4), math.random(5, 20))
             end
@@ -108,18 +108,27 @@ function Player:update(dt)
 end
 
 function Player:col()
-    local col = self.sc:dist(self, "enemy", self.w)
-    if col ~= nil and not self.hurt then
+    local w = self.w*0.7
+    if self.dash.active then
+        w = self.w
+    end
+    local col = self.sc:dist(self, "enemy", w)
+    if col ~= nil then
+        if self.dash.active or not self.hurt then
+            self.sc:remove(col)
+            self.sc:shake(15)
+            if self.dash.active then    
+                self.sc:inc_kills()
+            end
+            for _=0, 3 do
+                self.sc:add(Particle, self.x+self.w/2, self.y+self.h/2, math.random(-5, 5), math.random(-5, 5), math.random(10, 30), PALETTE.acc)
+            end
+        end
         if not self.dash.active then
             self.hurt = true
             AddTimer(90, function ()
                 self.hurt = false
             end)
-        end
-        self.sc:remove(col)
-        self.sc:shake(15)
-        for _=0, 3 do
-            self.sc:add(Particle, self.x+self.w/2, self.y+self.h/2, math.random(-5, 5), math.random(-5, 5), math.random(10, 30))
         end
     end
 end

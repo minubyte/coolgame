@@ -10,7 +10,7 @@ function Particle:init(x, y, vx, vy, size, color)
     self.vy = vy
     
     self.size = size
-    self.color = color or rgb(255, 255, 255)
+    self.color = color or PALETTE.light
     
     self.tag = "particle"
 end

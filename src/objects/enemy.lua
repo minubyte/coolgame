@@ -23,7 +23,7 @@ function Enemy:init(x, y)
         time = 7,
     }
     
-    self.deg = math.random(-60, 60)
+    self.deg = math.random(-50, 50)
     self.speed = math.sin(self.deg)*speed
 
     self.tag = "enemy"

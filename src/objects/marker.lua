@@ -15,7 +15,9 @@ end
 
 function Marker:draw()
     love.graphics.setLineWidth(3)
+    love.graphics.setColor(PALETTE.light)
     love.graphics.circle("line", self.x+self.w/2, self.y+self.h/2, self.size*10)
+    love.graphics.setColor(1, 1, 1)
 end
 
 function Marker:update(dt)

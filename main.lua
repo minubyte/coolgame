@@ -15,6 +15,12 @@ function love.load()
     
     UNIT = 32
 
+    PALETTE = {
+        dark = rgb(32, 21, 51),
+        light = rgb(255, 255, 255),
+        acc = rgb(0, 152, 219),
+    }
+
     Res:init()
     SM:init()
     

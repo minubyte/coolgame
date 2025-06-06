@@ -21,10 +21,16 @@ function Game:init()
         x = 0,
         y = 0,
     }
+
+    self.kills = {
+        count = 1123,
+        bounce = 0,
+    }
 end
 
 function Game:draw_background()
-    love.graphics.setColor(1, 1, 1, 0.2)
+    love.graphics.setBlendMode("lighten", "premultiplied")
+    love.graphics.setColor(1, 1, 1, 0.02)
     local size = 30
     for x=0, Res.w/size do
         for y=0, Res.w/size do
@@ -33,10 +39,12 @@ function Game:draw_background()
             end
         end
     end
+    love.graphics.setBlendMode("alpha")
     love.graphics.setColor(1, 1, 1)
 end
 
 function Game:draw()
+    love.graphics.setBackgroundColor(PALETTE.dark)
     love.graphics.push()
 
     if self.camera_shake.dur > 0.1 then
@@ -49,6 +57,9 @@ function Game:draw()
         object:draw()
     end
 
+    local s = tostring(self.kills.count)
+    love.graphics.print(s, Res.w/2, 50, 0, 1+self.kills.bounce, 1-self.kills.bounce, FONT:getWidth(s)/2, FONT:getHeight()/2)
+
     love.graphics.pop()
 end
 
@@ -57,6 +68,8 @@ function Game:shake(dur)
 end
 
 function Game:update(dt)
+    self.kills.bounce = self.kills.bounce+(0-self.kills.bounce)*0.07*dt
+
     if self.camera_shake.dur > 0.1 then
         self.camera_shake.x = math.random(-self.camera_shake.dur, self.camera_shake.dur)
         self.camera_shake.y = math.random(-self.camera_shake.dur, self.camera_shake.dur)
@@ -77,7 +90,7 @@ function Game:summon(x, y)
 end
 
 function Game:summon_loop()
-    local x, y = math.random(0, Res.w), math.random(0, Res.h)
+    local x, y = math.random(0, Res.w-UNIT), math.random(0, Res.h-UNIT)
     local marker = self:add(Marker, x, y)
     AddTimer(60, function ()
         self:summon(x, y)
@@ -86,6 +99,11 @@ function Game:summon_loop()
     AddTimer(200, function ()
         self:summon_loop()
     end)
+end
+
+function Game:inc_kills()
+    self.kills.count = self.kills.count+1
+    self.kills.bounce = 0.5
 end
 
 return Game

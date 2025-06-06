@@ -12,7 +12,7 @@ function LineParticle:init(x, y, lx, ly, size, color)
     self.l = 0
 
     self.size = size
-    self.color = color or rgb(255, 255, 255)
+    self.color = color or PALETTE.light
     
     self.tag = "particle"
 end
