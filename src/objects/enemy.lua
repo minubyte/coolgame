@@ -54,8 +54,8 @@ function Enemy:update(dt)
         end
     end
     
-    self.sc:move_x(self, self.mx*speed)
-    self.sc:move_y(self, self.my*speed)
+    self.sc:move_x(self, self.mx*speed*dt)
+    self.sc:move_y(self, self.my*speed*dt)
 end
 
 return Enemy

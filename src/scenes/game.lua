@@ -9,7 +9,9 @@ local Marker = require("src.objects.marker")
 
 function Game:init()
     self.player = self:add(Player)
+    -- self:add(Enemy, Res.w/2+UNIT, Res.h/2)
 
+    math.randomseed(love.timer.getTime())
     self:summon_loop()
 
     self.camera_shake = {
@@ -22,8 +24,8 @@ function Game:init()
         y = 0,
     }
 
-    self.kills = {
-        count = 1123,
+    self.score = {
+        value = 0,
         bounce = 0,
     }
 end
@@ -57,8 +59,8 @@ function Game:draw()
         object:draw()
     end
 
-    local s = tostring(self.kills.count)
-    love.graphics.print(s, Res.w/2, 50, 0, 1+self.kills.bounce, 1-self.kills.bounce, FONT:getWidth(s)/2, FONT:getHeight()/2)
+    local s = tostring(self.score.value)
+    love.graphics.print(s, Res.w/2, 50, 0, 1+self.score.bounce, 1-self.score.bounce, FONT:getWidth(s)/2, FONT:getHeight()/2)
 
     love.graphics.pop()
 end
@@ -68,7 +70,7 @@ function Game:shake(dur)
 end
 
 function Game:update(dt)
-    self.kills.bounce = self.kills.bounce+(0-self.kills.bounce)*0.07*dt
+    self.score.bounce = self.score.bounce+(0-self.score.bounce)*0.07*dt
 
     if self.camera_shake.dur > 0.1 then
         self.camera_shake.x = math.random(-self.camera_shake.dur, self.camera_shake.dur)
@@ -101,9 +103,9 @@ function Game:summon_loop()
     end)
 end
 
-function Game:inc_kills()
-    self.kills.count = self.kills.count+1
-    self.kills.bounce = 0.5
+function Game:inc_score(v)
+    self.score.value = self.score.value+v
+    self.score.bounce = 0.5
 end
 
 return Game

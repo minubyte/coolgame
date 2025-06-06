@@ -50,8 +50,8 @@ end
 function Player:update(dt)
     self:col()
     if self.dash.active then
-        self.sc:move_x(self, self.dash.x*dash_speed)
-        self.sc:move_y(self, self.dash.y*dash_speed)
+        self.sc:move_x(self, self.dash.x*dash_speed*dt)
+        self.sc:move_y(self, self.dash.y*dash_speed*dt)
         self.dash.timer = self.dash.timer+dt
         if self.dash.timer >= self.dash.time then
             self.dash.timer = 0
@@ -87,8 +87,8 @@ function Player:update(dt)
             end
         end
 
-        self.sc:move_x(self, self.mx*speed)
-        self.sc:move_y(self, self.my*speed)
+        self.sc:move_x(self, self.mx*speed*dt)
+        self.sc:move_y(self, self.my*speed*dt)
         
         if Input.dash.pressed then
             self.dash.active = true
@@ -107,18 +107,36 @@ function Player:update(dt)
     end
 end
 
+function Player:dist_line(a, b)
+    local ax = a.x+a.w/2
+    local ay = a.y+a.h/2
+    local bx = b.x+b.w/2
+    local by = b.y+b.h/2
+    
+    local dx = ax - bx
+    local dy = ay - by
+
+    local perp_x = -self.dash.y
+    local perp_y = self.dash.x
+
+    local dot = dx * perp_x + dy * perp_y
+
+    return math.abs(dot)
+end
+
 function Player:col()
     local w = self.w*0.7
     if self.dash.active then
-        w = self.w
+        w = self.w*1.2
     end
     local col = self.sc:dist(self, "enemy", w)
     if col ~= nil then
         if self.dash.active or not self.hurt then
             self.sc:remove(col)
             self.sc:shake(15)
-            if self.dash.active then    
-                self.sc:inc_kills()
+            if self.dash.active then
+                local d = self:dist_line(self, col)
+                self.sc:inc_score(100-math.floor(d))
             end
             for _=0, 3 do
                 self.sc:add(Particle, self.x+self.w/2, self.y+self.h/2, math.random(-5, 5), math.random(-5, 5), math.random(10, 30), PALETTE.acc)

@@ -23,7 +23,7 @@ function love.load()
 
     Res:init()
     SM:init()
-    
+
     canvas = love.graphics.newCanvas(Res.w, Res.h)
 end
 
@@ -42,6 +42,7 @@ function love.update(dt)
     if dt > 1.5 then
         dt = 1.5
     end
+    -- dt = 0.6 
     UpdateInputs()
     UpdateTimers(dt)
     SM:update(dt)
