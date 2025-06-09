@@ -5,7 +5,7 @@ local Enemy = Object:new()
 local Particle = require("src.objects.particle")
 
 local img = love.graphics.newImage("assets/imgs/enemy.png")
-local speed = 3
+local base_speed = 3
 
 function Enemy:init(x, y)
     self.w = img:getWidth()
@@ -24,7 +24,7 @@ function Enemy:init(x, y)
     }
     
     self.deg = math.random(-50, 50)
-    self.speed = math.sin(self.deg)*speed
+    self.speed = math.sin(self.deg)*base_speed
 
     self.tag = "enemy"
 end
@@ -54,8 +54,8 @@ function Enemy:update(dt)
         end
     end
     
-    self.sc:move_x(self, self.mx*speed*dt)
-    self.sc:move_y(self, self.my*speed*dt)
+    self.sc:move_x(self, self.mx*base_speed*dt)
+    self.sc:move_y(self, self.my*base_speed*dt)
 end
 
 return Enemy

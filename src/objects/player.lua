@@ -91,6 +91,7 @@ function Player:update(dt)
         self.sc:move_y(self, self.my*speed*dt)
         
         if Input.dash.pressed then
+            self.sc:inc_score(-10)
             self.dash.active = true
             self.sc:shake(5)
             if self.dash.x^2+self.dash.y^2 > 1 then

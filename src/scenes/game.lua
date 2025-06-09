@@ -106,6 +106,9 @@ end
 function Game:inc_score(v)
     self.score.value = self.score.value+v
     self.score.bounce = 0.5
+    if self.score.value < 0 then
+        self.score.value = 0
+    end
 end
 
 return Game
