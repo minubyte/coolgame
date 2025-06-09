@@ -24,7 +24,6 @@ function Enemy:init(x, y)
     }
     
     self.deg = math.random(-50, 50)
-    self.speed = math.sin(self.deg)*base_speed
 
     self.tag = "enemy"
 end

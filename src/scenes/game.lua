@@ -5,14 +5,16 @@ local Game = Scene:new()
 local Particle = require("src.objects.particle")
 local Player = require("src.objects.player")
 local Enemy = require("src.objects.enemy")
+local Lazer = require("src.objects.lazer")
 local Marker = require("src.objects.marker")
+local LazerMarker = require("src.objects.lazer_marker")
 
 function Game:init()
     self.player = self:add(Player)
-    -- self:add(Enemy, Res.w/2+UNIT, Res.h/2)
 
     math.randomseed(love.timer.getTime())
-    self:summon_loop()
+    self:enemy_loop()
+    self:lazer_loop()
 
     self.camera_shake = {
         dur = 0,
@@ -83,7 +85,7 @@ function Game:update(dt)
     end
 end
 
-function Game:summon(x, y)
+function Game:summon_enemy(x, y)
     self:add(Enemy, x, y)
     self:shake(3)
     for _=0, 5 do
@@ -91,15 +93,38 @@ function Game:summon(x, y)
     end
 end
 
-function Game:summon_loop()
+function Game:summon_lazer(x, y, w, h)
+    self:add(Lazer, x, y, w, h)
+    self:shake(6)
+end
+
+function Game:enemy_loop()
     local x, y = math.random(0, Res.w-UNIT), math.random(0, Res.h-UNIT)
     local marker = self:add(Marker, x, y)
     AddTimer(60, function ()
-        self:summon(x, y)
+        self:summon_enemy(x, y)
         self:remove(marker)
     end)
     AddTimer(200, function ()
-        self:summon_loop()
+        self:enemy_loop()
+    end)
+end
+
+function Game:lazer_loop()
+    local xy = {math.random(0, Res.w-UNIT), math.random(0, Res.h-UNIT)}
+    local hw = {Res.h, Res.w}
+    local zero = math.random(1, 2)
+    xy[zero] = 0
+    hw[zero] = 0
+    local x, y = xy[1], xy[2]
+    local h, w = hw[1], hw[2]
+    local marker = self:add(LazerMarker, x, y, w, h)
+    AddTimer(60, function ()
+        self:summon_lazer(x, y, w, h)
+        self:remove(marker)
+    end)
+    AddTimer(150, function ()
+        self:lazer_loop()
     end)
 end
 

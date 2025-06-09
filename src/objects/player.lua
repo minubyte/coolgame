@@ -33,13 +33,13 @@ function Player:init()
         y = 0,
     }
     
-    self.hurt = false
+    self.is_hurt = false
 
     self.tag = "player"
 end
 
 function Player:draw()
-    if self.hurt then
+    if self.is_hurt then
         love.graphics.setColor(1, 1, 1, 0.7)
     end
     local nx, ny = self.x+self.w/2, self.y+self.h/2
@@ -48,7 +48,7 @@ function Player:draw()
 end
 
 function Player:update(dt)
-    self:col()
+    self:col_enemy()
     if self.dash.active then
         self.sc:move_x(self, self.dash.x*dash_speed*dt)
         self.sc:move_y(self, self.dash.y*dash_speed*dt)
@@ -90,6 +90,8 @@ function Player:update(dt)
         self.sc:move_x(self, self.mx*speed*dt)
         self.sc:move_y(self, self.my*speed*dt)
         
+        self:col_lazer()
+
         if Input.dash.pressed then
             self.sc:inc_score(-10)
             self.dash.active = true
@@ -125,16 +127,15 @@ function Player:dist_line(a, b)
     return math.abs(dot)
 end
 
-function Player:col()
+function Player:col_enemy()
     local w = self.w*0.7
     if self.dash.active then
         w = self.w*1.2
     end
     local col = self.sc:dist(self, "enemy", w)
     if col ~= nil then
-        if self.dash.active or not self.hurt then
+        if self.dash.active or not self.is_hurt then
             self.sc:remove(col)
-            self.sc:shake(15)
             if self.dash.active then
                 local d = self:dist_line(self, col)
                 self.sc:inc_score(100-math.floor(d))
@@ -142,13 +143,31 @@ function Player:col()
             for _=0, 3 do
                 self.sc:add(Particle, self.x+self.w/2, self.y+self.h/2, math.random(-5, 5), math.random(-5, 5), math.random(10, 30), PALETTE.acc)
             end
+            self.sc:shake(10)
         end
         if not self.dash.active then
-            self.hurt = true
-            AddTimer(90, function ()
-                self.hurt = false
-            end)
+            self:hurt()
         end
+    end
+end
+
+function Player:col_lazer()
+    local col = self.sc:col(self, "lazer")
+    if col ~= nil then
+        self:hurt()
+    end
+end
+
+function Player:hurt()
+    if not self.is_hurt then
+        for _=0, 3 do
+            self.sc:add(Particle, self.x+self.w/2, self.y+self.h/2, math.random(-5, 5), math.random(-5, 5), math.random(10, 30), PALETTE.acc)
+        end
+        self.sc:shake(15)
+        self.is_hurt = true
+        AddTimer(90, function ()
+            self.is_hurt = false
+        end)
     end
 end
 
