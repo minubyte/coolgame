@@ -14,6 +14,7 @@ Input.right = new("right", {"d", "right"})
 Input.up = new("up", {"w", "up"})
 Input.down = new("down", {"s", "down"})
 Input.dash = new("dash", {"lshift", "rshift", "space"})
+Input.debug = new("debug", {"backspace"})
 
 function UpdateInputs()
     for _, action in pairs(Input) do

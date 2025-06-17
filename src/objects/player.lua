@@ -93,7 +93,9 @@ function Player:update(dt)
         self:col_lazer()
 
         if Input.dash.pressed then
-            self.sc:inc_score(-10)
+            if not self.sc.upgrade.phase then
+                self.sc:inc_score(-10)
+            end
             self.dash.active = true
             self.sc:shake(5)
             if self.dash.x^2+self.dash.y^2 > 1 then

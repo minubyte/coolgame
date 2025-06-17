@@ -22,3 +22,12 @@ function Dist(a, b)
     local by = b.y+b.h/2
     return math.sqrt((ax-bx)^2+(ay-by)^2)
 end
+
+function In(item, table)
+    for _, v in ipairs(table) do
+        if item == v then
+            return true
+        end
+    end
+    return false
+end

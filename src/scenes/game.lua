@@ -10,11 +10,8 @@ local Marker = require("src.objects.marker")
 local LazerMarker = require("src.objects.lazer_marker")
 
 function Game:init()
-    self.player = self:add(Player)
-
     math.randomseed(love.timer.getTime())
-    self:enemy_loop()
-    self:lazer_loop()
+    self.player = self:add(Player)
 
     self.camera_shake = {
         dur = 0,
@@ -30,6 +27,16 @@ function Game:init()
         value = 0,
         bounce = 0,
     }
+
+    self.upgrade = {
+        phase = false,
+        count = 1,
+    }
+
+    self:enemy_loop()
+    
+    -- 아직은 안씀
+    -- self:lazer_loop()
 end
 
 function Game:draw_background()
@@ -64,6 +71,10 @@ function Game:draw()
     local s = tostring(self.score.value)
     love.graphics.print(s, Res.w/2, 50, 0, 1+self.score.bounce, 1-self.score.bounce, FONT:getWidth(s)/2, FONT:getHeight()/2)
 
+    if self.upgrade.phase then
+        love.graphics.print("asdfasdfasdf", 100, 100)
+    end
+
     love.graphics.pop()
 end
 
@@ -83,6 +94,14 @@ function Game:update(dt)
     for _, object in pairs(self.objects) do
         object:update(dt)
     end
+
+    if DEBUG and Input.debug.down then
+        self:start_upgrade()
+    end
+
+    if not self.upgrade.phase and self.score.value >= 450*self.upgrade.count^2 then
+        self:start_upgrade()
+    end
 end
 
 function Game:summon_enemy(x, y)
@@ -99,18 +118,24 @@ function Game:summon_lazer(x, y, w, h)
 end
 
 function Game:enemy_loop()
+    if self.upgrade.phase then
+        return
+    end
     local x, y = math.random(0, Res.w-UNIT), math.random(0, Res.h-UNIT)
     local marker = self:add(Marker, x, y)
-    AddTimer(60, function ()
+    AddTimer(40, function ()
         self:summon_enemy(x, y)
         self:remove(marker)
     end)
-    AddTimer(200, function ()
+    AddTimer(160, function ()
         self:enemy_loop()
     end)
 end
 
 function Game:lazer_loop()
+    if self.upgrade.phase then
+        return
+    end
     local xy = {math.random(0, Res.w-UNIT), math.random(0, Res.h-UNIT)}
     local hw = {Res.h, Res.w}
     local zero = math.random(1, 2)
@@ -133,6 +158,22 @@ function Game:inc_score(v)
     self.score.bounce = 0.5
     if self.score.value < 0 then
         self.score.value = 0
+    end
+end
+
+local remove_list = {"enemy", "marker", "lazer", "lazer_marker"}
+
+function Game:start_upgrade()
+    self.upgrade.count = self.upgrade.count + 1
+    self.upgrade.phase = true
+    self:shake(10)
+    for i, o in ipairs(self.objects) do
+        if In(o.tag, remove_list) then
+            table.remove(self.objects, i)
+            for _=0, 2 do
+                self:add(Particle, o.x+o.w/2, o.y+o.h/2, math.random(-5, 5), math.random(-5, 5), math.random(5, 20))
+            end
+        end
     end
 end
 
